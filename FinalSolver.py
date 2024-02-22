@@ -1,0 +1,58 @@
+from itertools import combinations
+
+letters = str(input('Please provide all the letters:')).lower()
+print(f"You're letters are: {letters}")
+#important_letter = str(input('Please provide the important letter')).lower()
+
+main_letter = str(input('Please provide the center letter: '))
+
+letter_list = list(letters)
+
+#this will only take the panagrams
+def panagram(filename, all_letters, main_letter):
+    try:
+        with open(filename, 'r', encoding="utf-8") as file:
+            words_list = file.read().splitlines()
+
+    except FileNotFoundError:
+        return 'Failure'
+
+    modified_list = [word for word in words_list if all(letters in word for letters in all_letters)]
+    # this takes all the words with, at the very least, the given letters
+
+    modified_list_1 = [words for words in modified_list if any(letter not in all_letters for letter in words)]
+    # this takes all the words with extra letters
+
+    panagram_list = [item for item in modified_list if item not in modified_list_1 and main_letter in item]
+    # this removes all words with extra letters from bigger list
+    # this captures the panagram
+
+    return panagram_list
+
+
+def total_combinations(string, max_combos):
+    if max_combos <= 3:
+        return []
+    else:
+        combos = [combo for combo in combinations(string, max_combos)]
+    return combos + total_combinations(string, max_combos - 1)
+
+tuples_to_list = total_combinations(letters, 7)  # this prints as big list with individuals tuples of letter strings
+
+lists = [''.join(i) for i in tuples_to_list]  # this is a list of all the combinations A LIST
+#print(lists)
+
+filename = 'wordlist.txt'
+#combos = total_combinations(letters, 7)
+final_list = []
+for list in lists:
+    if panagram(filename, list, main_letter):
+        #assert that the list has content
+        final_list.append(panagram(filename, list, main_letter))
+
+flattened_final_list = [element for sublist in final_list for element in sublist]
+
+#print(flattened_list)
+print('The possible words are: ')
+for final_word in flattened_final_list:
+    print(final_word)
