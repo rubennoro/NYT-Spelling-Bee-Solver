@@ -9,7 +9,14 @@ main_letter = str(input('Please provide the center letter: '))
 letter_list = list(letters)
 
 #this will only take the panagrams
-def panagram(filename, all_letters, main_letter):
+def all_words(filename, all_letters, main_letter):
+    '''
+
+    :param filename: name of the txt file passed through the function
+    :param all_letters: the set of letters inputted by the user
+    :param main_letter: the primary letter that each correct word must contain
+    :return: list of the valid words under the combination size
+    '''
     try:
         with open(filename, 'r', encoding="utf-8") as file:
             words_list = file.read().splitlines()
@@ -23,36 +30,39 @@ def panagram(filename, all_letters, main_letter):
     modified_list_1 = [words for words in modified_list if any(letter not in all_letters for letter in words)]
     # this takes all the words with extra letters
 
-    panagram_list = [item for item in modified_list if item not in modified_list_1 and main_letter in item]
+    main_list = [item for item in modified_list if item not in modified_list_1 and main_letter in item]
     # this removes all words with extra letters from bigger list
     # this captures the panagram
 
-    return panagram_list
+    return main_list
 
 
 def total_combinations(string, max_combos):
+    '''
+
+    :param string:
+    :param max_combos: NYT's only takes in words of 4 letters or greater
+    :return: recursively iterates to collect all the
+    '''
     if max_combos <= 3:
         return []
     else:
         combos = [combo for combo in combinations(string, max_combos)]
     return combos + total_combinations(string, max_combos - 1)
 
-tuples_to_list = total_combinations(letters, 7)  # this prints as big list with individuals tuples of letter strings
-
-lists = [''.join(i) for i in tuples_to_list]  # this is a list of all the combinations A LIST
-#print(lists)
+lists = total_combinations(letters, 7)
+# this prints as big list of individual combinations up to size 7, representing all the letters
 
 filename = 'wordlist.txt'
-#combos = total_combinations(letters, 7)
 final_list = []
+
 for list in lists:
-    if panagram(filename, list, main_letter):
+    if all_words(filename, list, main_letter):
         #assert that the list has content
-        final_list.append(panagram(filename, list, main_letter))
+        final_list.append(all_words(filename, list, main_letter))
 
 flattened_final_list = [element for sublist in final_list for element in sublist]
 
-#print(flattened_list)
 print('The possible words are: ')
 for final_word in flattened_final_list:
     print(final_word)
